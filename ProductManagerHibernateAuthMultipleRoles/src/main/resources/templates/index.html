@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+	
+        <title>Bootstrap CRUD Data Table for Database with Modal Form</title>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="../static/main.js" th:src="@{/main.js}"></script>
+<head>
+<meta charset="ISO-8859-1">
+<title>Product Manager</title>
+</head>
+<body>
+<div align="center">	
+	<div sec:authorize="isAuthenticated()">
+		Welcome <b><span sec:authentication="name">Username</span></b>
+		&nbsp;
+		<i><span sec:authentication="principal.authorities">Roles</span></i>
+	</div>
+		
+	<form th:action="@{/logout}" method="post">
+		<input type="submit" value="Logout" />
+	</form>
+	
+	<h1>Product Manager</h1>
+	<div sec:authorize="hasAnyAuthority('CREATOR', 'ADMIN')">
+		<a href="new">Create New Product</a>
+	</div>
+	
+	<br/><br/>
+	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal" >Add new</button>
+	
+	<table  border="1" cellpadding="10">
+		<thead>
+			<tr>
+				
+				<th>Name</th>
+				<th>Brand</th>
+				<th>Made In</th>
+				<th>Price</th>
+				
+				<th sec:authorize="hasAnyAuthority('ADMIN', 'EDITOR')">Actions</th>				
+				
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="product : ${listProducts}">
+			
+				<td th:text="${product.name}">Name</td>
+				<td th:text="${product.brand}">Brand</td>
+				<td th:text="${product.madein}">Made in</td>
+				<td th:text="${product.price}">Price</td>
+				
+				<td sec:authorize="hasAnyAuthority('ADMIN', 'EDITOR')">
+				<a th:href="@{/getIdProduct/(id=${product.id})}" id="edit" class="edit" >Edit</a>
+
+
+					<a sec:authorize="hasAuthority('ADMIN')" th:href="@{'/delete/' + ${product.id}}">Delete</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<form  th:action="@{/save}" method="post">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">New Product</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+          <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Name:</label>
+            <input type="text" class="form-control" id="recipient-name" name="name">
+          </div>
+                    <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Brand:</label>
+            <input type="text" class="form-control" id="recipient-name" name="brand">
+          </div>
+                    <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Made IN:</label>
+            <input type="text" class="form-control" id="recipient-name" name="madein">
+          </div>
+                    <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Price:</label>
+            <input type="text" class="form-control" id="recipient-name" name="price">
+          </div>
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+  </form>
+</div>
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<form  th:action="@{/updateProduct}" method="put">
+	<input type="hidden" id="idEdit" name="id"/>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editModalLabel">Edit Product</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+	
+        
+          <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Name:</label>
+            <input type="text" class="form-control"  id="NameEdit" name="name">
+          </div>
+                    <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Brand:</label>
+            <input type="text" class="form-control"  id="BrandEdit" name="brand">
+          </div>
+                    <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Made IN:</label>
+            <input type="text" class="form-control"  id="MadeinEdit" name="madein">
+          </div>
+                    <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Price:</label>
+            <input type="text" class="form-control"  id="PriceEdit" name="price">
+          </div>
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+  </form>
+</div>
+
+</div>
+</body>
+</html>
